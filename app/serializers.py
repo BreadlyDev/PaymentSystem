@@ -2,9 +2,11 @@ from django.db.models import Sum
 from rest_framework import serializers
 from . import models as m
 
+from user.serializers import UserSerializer
+
 
 class AppSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField()
+    owner = UserSerializer(read_only=True)
     is_active = serializers.ReadOnlyField()
 
     class Meta:
@@ -38,7 +40,7 @@ class AppAnalyticsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = m.App
-        fields = ['id', 'income', 'owner', 'account', 'is_active', 'created_at', 'updated_at', 'transactions']
+        fields = ['id', 'title', 'income', 'owner', 'account', 'is_active', 'created_at', 'updated_at', 'transactions']
 
     def get_transactions(self, obj):
         return obj.transactions.count()

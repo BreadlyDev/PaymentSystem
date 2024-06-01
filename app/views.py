@@ -18,11 +18,8 @@ class AppCreateAPIView(generics.CreateAPIView):
     serializer_class = s.AppSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def create(self, request, *args, **kwargs):
-        data = self.request.data
-        data['owner'] = self.request.user
-
-        super().create(request, args, kwargs)
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class AppAnalyticsAPIView(generics.ListAPIView):

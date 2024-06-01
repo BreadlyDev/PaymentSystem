@@ -34,9 +34,9 @@ class App(models.Model):
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
-        if not self.credentials:
-            self.create_credentials()
         super().save()
+        if not hasattr(self, 'credentials'):
+            self.create_credentials()
     
     def __str__(self):
         return f'Приложение {self.title} пользователя {self.owner}'
