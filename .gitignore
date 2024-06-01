@@ -1,0 +1,10 @@
+.idea
+.idea/*
+db.sqlite3
+app/migrations
+transaction/migrations
+user/migrations
+user/__pycache__/*
+transaction/__pycache__/*
+app/__pycache__/*
+main/__pycache__/*
