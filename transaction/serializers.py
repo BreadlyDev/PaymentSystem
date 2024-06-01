@@ -16,9 +16,6 @@ class TransactionCreateSerializer(serializers.ModelSerializer):
     account = serializers.CharField(max_length=50)
     client_id = serializers.CharField(max_length=200)
     client_secret = serializers.CharField(max_length=500)
-    # app_account = serializers.CharField(max_length=50)
-    app = AppSerializer(read_only=True)
-
     class Meta:
         model = m.Transaction
         fields = '__all__'

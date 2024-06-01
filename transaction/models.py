@@ -6,9 +6,8 @@ from app.models import App
 
 class Transaction(models.Model):
     STATUS = (
-        ('Неизвестен', 'Неизвестен'),
+        ('Размещен', 'Размещен'),
         ('Отменен', 'Отменен'),
-        ('Инициализирован', 'Инициализирован'),
         ('В обработке', 'В обработке'),
         ('Исполнен', 'Исполнен'),
     )
@@ -17,7 +16,7 @@ class Transaction(models.Model):
     app = models.ForeignKey(App, on_delete=models.CASCADE, related_name='transactions')
     title = models.CharField(max_length=150)
     full_sum = models.FloatField()
-    status = models.CharField(max_length=150, choices=STATUS, default=STATUS[2][1])
+    status = models.CharField(max_length=150, choices=STATUS, default=STATUS[0][1])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
