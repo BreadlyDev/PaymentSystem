@@ -1,4 +1,6 @@
 from rest_framework import generics, status, permissions, response as r
+from rest_framework.exceptions import NotFound
+
 from . import models as m, serializers as s
 
 
@@ -36,10 +38,18 @@ class AppAnalyticsAPIView(generics.ListAPIView):
 
 class AppAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = m.App.objects.all()
+    serializer_class = s.AppSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        if self.request.user.is_superuser:
-            return self.queryset
+        queryset = self.get_queryset()
 
-        return self.queryset.filter(owner=self.request.user.id)
+        if self.request.user.is_superuser:
+            return super().get_object()
+
+        try:
+            app = queryset.get(pk=self.kwargs['pk'], owner=self.request.user)
+        except m.App.DoesNotExist:
+            raise NotFound('App not found or you do not have permission to access it')
+
+        return app

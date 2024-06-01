@@ -7,7 +7,7 @@ from user.models import User
 
 
 class App(models.Model):
-    title = models.CharField(max_length=150)
+    title = models.CharField(max_length=150, unique=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='apps')
     account = models.CharField(max_length=150)
     is_active = models.BooleanField(default=True)

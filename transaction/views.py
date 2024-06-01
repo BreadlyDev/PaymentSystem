@@ -1,6 +1,7 @@
 import requests
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, status, permissions, views, response as r
+from rest_framework import generics, status, permissions, response as r
+
 from . import models as m, serializers as s, filters as f
 
 
@@ -11,16 +12,17 @@ class TransactionListAPIView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = f.TransactionFilter
 
-    # def get_queryset(self):
-    #     # if self.request.user.is_superuser:
-    #     return self.queryset
-
-        # return self.queryset.filter(app=self.request.user.apps)
+    def get_queryset(self):
+        user_apps = self.request.user.apps.all()
+        return m.Transaction.objects.filter(app__in=user_apps)
 
 
 class TransactionCreateAPIView(generics.CreateAPIView):
     serializer_class = s.TransactionSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        super().post()
 
 
 class TransactionDataGetAPIView(generics.CreateAPIView):
@@ -31,18 +33,24 @@ class TransactionDataGetAPIView(generics.CreateAPIView):
         super().post(request, args, kwargs)
 
 
-class TransactionSendAPIView(views.APIView):
+class TransactionSendAPIView(generics.CreateAPIView):
+    serializer_class = s.TransactionCreateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = s.TransactionCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        data = request.data
 
         external_url = 'http://localhost:8080/transactions/'
         try:
             external_response = requests.post(
                 external_url,
-                json=serializer.validated_data,
+                json={
+                    'from_card': m.App.objects.get(id=data['app']).account,
+                    'to_card_number': data['account'],
+                    'amount': str(data['full_sum']),
+                },
             )
             external_response.raise_for_status()
 
